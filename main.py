@@ -6,7 +6,7 @@ import google.generativeai as genai
 
 # ------------------- Configure the Gemini API -------------------
 try:
-    GEMINI_API_KEY = "GEMINI_API_KEY"  # Replace with your actual Gemini API key
+    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
     if not GEMINI_API_KEY:
         raise ValueError("Gemini API key not found. Please set GEMINI_API_KEY environment variable.")
     genai.configure(api_key=GEMINI_API_KEY)
