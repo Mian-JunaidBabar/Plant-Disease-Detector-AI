@@ -141,7 +141,7 @@ elif app_mode == "About":
     st.markdown("""
     **Junaid Babar**  
     📧 [junaidbabar121@gmail.com](mailto:junaidbabar121@gmail.com)  
-    [GitHub](#) | [LinkedIn](https://www.linkedin.com/in/junaid-babar-7bb4b2264/)
+    [GitHub](https://github.com/Mian-JunaidBabar/Plant-Disease-Detector-AI) | [LinkedIn](https://www.linkedin.com/in/junaid-babar-7bb4b2264/)
     """)
 
     st.subheader("🙏 Special Thanks To")
