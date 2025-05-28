@@ -12,7 +12,7 @@ The motivation is to assist farmers and agricultural professionals by providing 
 
 ### 🔍 Step-by-Step Workflow:
 
-1. **User selects a leaf image from the test dataset** (no upload necessary).
+1. **User selects a leaf image from the test dataset**.
 2. The pre-trained CNN model classifies the disease from the image.
 3. Gemini AI generates a human-readable explanation including:
 
@@ -81,17 +81,17 @@ Give a detailed explanation of the plant disease 'Tomato___Early_blight', includ
 
 ## 🧑‍💻 Author
 
-* **Junaid Babar** — Final Year BSCS Student at Superior University
+* **Junaid Babar** — BSCS Student at Superior University
 
 ---
 
 ## 🙏 Acknowledgements
 
-Special thanks to:
+Special thanks to (for their academic support and valuable project feedback):
 
-* **Sir Uzair Ahmed** – for his academic support and valuable project feedback
-* **Sir Haider Krar** – for motivating students to utilize LinkedIn and build public presence
-
+* **Sir Uzair Ahmed**
+* **Sir Haider Krar**
+  
 LinkedIn profiles of both supervisors will be linked in the final LinkedIn post.
 
 ---
