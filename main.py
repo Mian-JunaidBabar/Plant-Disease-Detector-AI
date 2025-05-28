@@ -41,7 +41,7 @@ app_mode = st.sidebar.selectbox("Select Page", ["Home", "About"])
 # ------------------- Home Page -------------------
 if app_mode == "Home":
     st.header("🌿 Intelligent Plant Disease Detection with Preventive Guidance Using Deep Learning")
-    st.image("media/thumbnail.png", use_column_width=True)
+    st.image("media/thumbnail.png", use_container_width=True)
     st.markdown("""
     Welcome! This system identifies plant diseases from images using deep learning.
 
@@ -66,7 +66,7 @@ if app_mode == "Home":
         use_uploaded = True
     elif selected_image:
         image_path = os.path.join(image_folder, selected_image)
-        st.image(image_path, caption=selected_image, use_column_width=True)
+        st.image(image_path, caption=selected_image, use_container_width=True)
 
     if st.button("Predict"):
         with st.spinner("Analyzing... 🔍"):
