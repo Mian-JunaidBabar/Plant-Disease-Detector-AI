@@ -15,7 +15,6 @@ except Exception as e:
     st.error(f"[Gemini API Error] {e}")
     model_gemini = None
 
-# ... later in the get_gemini_response function ...
 def get_gemini_response(plant_disease):
     if model_gemini is None:
         return "❌ Gemini API is not configured."
@@ -35,17 +34,6 @@ def model_prediction(test_image):
     predictions = model_tf.predict(input_arr)
     return np.argmax(predictions)
 
-# ------------------- Gemini API Response -------------------
-def get_gemini_response(plant_disease):
-    if model_gemini is None:
-        return "❌ Gemini API is not configured."
-    prompt = f"Give a detailed explanation of the plant disease '{plant_disease}', including causes, symptoms, and treatment/prevention."
-    try:
-        response = model_gemini.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"❌ Error getting Gemini response: {e}"
-
 # ------------------- Streamlit UI -------------------
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page", ["Home", "About"])
@@ -58,7 +46,7 @@ if app_mode == "Home":
     Welcome! This system identifies plant diseases from images using deep learning.
 
     ### How It Works:
-    1. Select a plant image from the test folder.
+    1. Select a plant image from the test folder **or upload your own image**.
     2. We'll predict the disease using a CNN model.
     3. You’ll get a detailed explanation powered by Google Gemini AI.
     """)
@@ -68,33 +56,52 @@ if app_mode == "Home":
     image_files = [f for f in os.listdir(image_folder) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
     selected_image = st.selectbox("Select a test image:", image_files)
 
-    if selected_image:
+    uploaded_file = st.file_uploader("Or upload your own plant image (jpg, jpeg, png):", type=["jpg", "jpeg", "png"])
+
+    image_path = None
+    use_uploaded = False
+
+    if uploaded_file is not None:
+        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+        use_uploaded = True
+    elif selected_image:
         image_path = os.path.join(image_folder, selected_image)
         st.image(image_path, caption=selected_image, use_column_width=True)
 
-        if st.button("Predict"):
-            with st.spinner("Analyzing... 🔍"):
+    if st.button("Predict"):
+        with st.spinner("Analyzing... 🔍"):
+            if use_uploaded:
+                temp_path = "temp_uploaded_image.png"
+                with open(temp_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                result_index = model_prediction(temp_path)
+                os.remove(temp_path)
+            elif image_path:
                 result_index = model_prediction(image_path)
-                class_name = ['Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
-                              'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
-                              'Cherry_(including_sour)___healthy', 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
-                              'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
-                              'Grape___Black_rot', 'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
-                              'Grape___healthy', 'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
-                              'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy',
-                              'Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy',
-                              'Raspberry___healthy', 'Soybean___healthy', 'Squash___Powdery_mildew',
-                              'Strawberry___Leaf_scorch', 'Strawberry___healthy', 'Tomato___Bacterial_spot',
-                              'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
-                              'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
-                              'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
-                              'Tomato___healthy']
+            else:
+                st.warning("Please select or upload an image.")
+                st.stop()
 
-                predicted_disease = class_name[result_index]
-                st.success(f"🩺 Detected Disease: **{predicted_disease}**")
+            class_name = ['Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
+                          'Blueberry___healthy', 'Cherry_(including_sour)___Powdery_mildew',
+                          'Cherry_(including_sour)___healthy', 'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
+                          'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
+                          'Grape___Black_rot', 'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
+                          'Grape___healthy', 'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
+                          'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy',
+                          'Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy',
+                          'Raspberry___healthy', 'Soybean___healthy', 'Squash___Powdery_mildew',
+                          'Strawberry___Leaf_scorch', 'Strawberry___healthy', 'Tomato___Bacterial_spot',
+                          'Tomato___Early_blight', 'Tomato___Late_blight', 'Tomato___Leaf_Mold',
+                          'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
+                          'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
+                          'Tomato___healthy']
 
-                disease_info = get_gemini_response(predicted_disease)
-                st.write(disease_info)
+            predicted_disease = class_name[result_index]
+            st.success(f"🩺 Detected Disease: **{predicted_disease}**")
+
+            disease_info = get_gemini_response(predicted_disease)
+            st.write(disease_info)
 
 # ------------------- About Page -------------------
 elif app_mode == "About":
@@ -140,7 +147,7 @@ elif app_mode == "About":
     st.subheader("🙏 Special Thanks To")
     st.markdown("""
     - Sir Uzair Ahmed – [LinkedIn](https://www.linkedin.com/in/ahmad540/)
-    - Sir Haider Krar – [LinkedIn](https://www.linkedin.com/in/syed-karar-haider-bukhari-a5752718b/) *(add actual link if different)*
+    - Sir Haider Krar – [LinkedIn](https://www.linkedin.com/in/syed-karar-haider-bukhari-a5752718b/)
 
     For their continuous support, insightful guidance, and encouragement throughout the project.
     """)
