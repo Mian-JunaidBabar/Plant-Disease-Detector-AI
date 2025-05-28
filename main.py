@@ -62,7 +62,7 @@ if app_mode == "Home":
     use_uploaded = False
 
     if uploaded_file is not None:
-        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+        st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
         use_uploaded = True
     elif selected_image:
         image_path = os.path.join(image_folder, selected_image)
